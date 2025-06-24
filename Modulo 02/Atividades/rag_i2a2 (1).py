@@ -9,11 +9,28 @@ Original file is located at
 
 # Download dos documentos em PDF
 import os
-if not os.path.exists("dados_rag_multiformato"):
-    os.makedirs("dados_rag_multiformato")
-# The URL containing the CSV data
-url = 'https://portaldatransparencia.gov.br/notas-fiscais/consulta/baixar?paginacaoSimples=true&direcaoOrdenacao=asc&de=01%2F06%2F2025&ate=02%2F06%2F2025&colunasSelecionadas=linkDetalhamento%2CorgaoSuperiorDestinatario%2CorgaoDestinatario%2CnomeFornecedor%2CcnpjFornecedor%2CmunicipioFornecedor%2CufFornecedor%2CchaveNotaFiscal%2CvalorNotaFiscal%2CdataEmissao%2CtipoEventoMaisRecente%2Cnumero%2Cserie%2CcnpjOrgaoDestinatario%2CdataTipoEventoMaisRecente'
-!wget "{url}" -O dados_rag_multiformato/dados_notas_fiscais.csv
+import requests
+from pathlib import Path
+
+# 1. Defina a URL do GitHub
+urlGit = "https://raw.githubusercontent.com/leogiarola/I2A2/refs/heads/main/Modulo%2002/Atividades/Notas%20Fiscais/notas-fiscais%20(3).csv"
+
+# 2. Faça o download do conteúdo
+response = requests.get(urlGit)
+response.raise_for_status()  # Verifica se houve erro
+
+# 3. Crie a pasta destino dentro do Colab
+target_folder = Path('/content/dados_rag_multiformato')
+target_folder.mkdir(parents=True, exist_ok=True)
+
+# 4. Defina o arquivo de destino
+file_path = target_folder / 'dados_notas_fiscais.csv'
+
+# 5. Salve o conteúdo baixado
+file_path.write_bytes(response.content)
+
+print(f"✅ Download concluído! Arquivo salvo em: {file_path}")
+
 
 # Instalar as bibliotecas que usaremos
 !pip install -q pdfplumber langchain langchain_community sentence-transformers faiss-cpu python-pptx pandas langchain-openai langchain-huggingface transformers torch accelerate ragas -q
